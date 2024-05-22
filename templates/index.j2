@@ -1,0 +1,28 @@
+{% import "macro.j2" as macro %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>GOSH tracer</title>
+
+  <style type="text/css">
+    {% include "dist.css" %}
+  </style>
+</head>
+
+<body>
+  <div class="container px-5">
+    <div class="group px-5">
+      {{ macro::render_message(message=message) }}
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    {% include "script.js" %}
+  </script>
+</body>
+
+</html>

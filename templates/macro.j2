@@ -1,0 +1,74 @@
+{% macro render_message(message) %}
+<div class="relative mt-5 min-w-[48rem]
+  before:absolute before:w-px before:h-full before:-left-[1rem] before:top-0 group-first:before:top-5
+  {% if message.transaction.messages | length %}before:bg-gray-300{% else %}before:bg-transparent{% endif %}">
+  <h1 class="text-sm font-medium {% if message.transaction.aborted %}text-rose-600{% endif %}">
+    <a href="{{ explorer_url }}/messages/messageDetails?id={{ message.id }}" target="_blank" class="underline">
+      {{ message.id | shorten_string(start=12, end=12) }}
+    </a>
+  </h1>
+  <div class="flex items-center gap-x-6 text-xs {% if message.transaction.aborted %}text-rose-600{% endif %}">
+    <div>
+      From:
+      {% if message.src %}
+      <a href="{{ explorer_url }}/accounts/accountDetails?id={{ message.src }}" target="_blank" class="underline">
+        {{ message.src | shorten_string(start=8, end=6) }}
+      </a>
+      {% else %}
+      External
+      {% endif %}
+    </div>
+    <div>-></div>
+    <div>
+      To:
+      <a href="{{ explorer_url }}/accounts/accountDetails?id={{ message.dst }}" target="_blank" class="underline">
+        {{ message.dst | shorten_string(start=8, end=6) }}
+      </a>
+    </div>
+  </div>
+  <div class="text-xs flex items-center gap-x-6 {% if message.transaction.aborted %}text-rose-600{% endif %}">
+    <div>
+      Tx:
+      <a href="{{ explorer_url }}/transactions/transactionDetails?id={{ message.transaction.id }}" target="_blank"
+        class="underline">
+        {{ message.transaction.id | shorten_string(start=6, end=6) }}
+      </a>
+    </div>
+    <div>
+      Aborted: {{message.transaction.aborted }}
+    </div>
+    <div>
+      Exit code: {{message.transaction.exit_code }}
+    </div>
+    <div>
+      VM steps: {{message.transaction.vm_steps }}
+    </div>
+    <div>
+      Logical time: {{message.transaction.lt }}
+    </div>
+  </div>
+  {% if message.decoded %}
+  <div class="mt-2 w-full border rounded-lg p-3 bg-gray-200">
+    <code class="block text-xs break-words">
+      {{ message.decoded.abi_path }}
+      <br/><br/>
+      {{ message.decoded.data | json_encode() | safe }}
+    </code>
+  </div>
+  {% endif %}
+</div>
+
+{% if message.transaction.messages %}
+<div>
+  {% for out_message in message.transaction.messages %}
+  <div class="group relative pl-5
+    before:absolute before:top-0 before:-left-[1rem] before:w-[1.3rem] before:h-5
+    before:border-l before:border-b before:border-gray-300
+    after:absolute after:top-5 after:-left-[1rem] after:w-px after:h-full
+    after:bg-gray-300 last:after:bg-transparent">
+    {{ self::render_message(message=out_message)}}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endmacro render_message %}
